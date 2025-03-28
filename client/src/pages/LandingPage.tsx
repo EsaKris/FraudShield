@@ -5,15 +5,56 @@ import { motion } from "framer-motion";
 export default function LandingPage() {
   const [, navigate] = useLocation();
 
+import { useState } from "react";
+
+
+
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-slate-900 text-white">
       {/* Navbar */}
       <nav className="bg-gray-900/50 backdrop-blur-sm fixed w-full z-50 border-b border-gray-800">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <i className="fas fa-shield-alt text-xl"></i>
-            <span className="text-xl font-bold">SecureCheck</span>
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <i className="fas fa-shield-alt text-xl"></i>
+              <span className="text-xl font-bold">SecureCheck</span>
+            </div>
+            
+            {/* Desktop navigation */}
+            <div className="hidden md:flex items-center space-x-4">
+              <a href="#features" className="hover:text-blue-400 transition-colors">Features</a>
+              <a href="#pricing" className="hover:text-blue-400 transition-colors">Pricing</a>
+              <Button onClick={() => navigate("/auth")} variant="outline" className="ml-4">
+                Get Started
+              </Button>
+            </div>
+
+            {/* Mobile menu button */}
+            <div className="md:hidden">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="text-white"
+              >
+                <i className={`fas ${mobileMenuOpen ? 'fa-times' : 'fa-bars'}`}></i>
+              </Button>
+            </div>
           </div>
+
+          {/* Mobile menu */}
+          {mobileMenuOpen && (
+            <div className="md:hidden pt-4 pb-3 border-t border-gray-700 mt-3">
+              <a href="#features" className="block py-2 hover:text-blue-400 transition-colors">Features</a>
+              <a href="#pricing" className="block py-2 hover:text-blue-400 transition-colors">Pricing</a>
+              <Button onClick={() => navigate("/auth")} variant="outline" className="mt-3 w-full">
+                Get Started
+              </Button>
+            </div>
+          )}
+        </div>
 
           <div className="flex items-center space-x-4">
             <Button 
