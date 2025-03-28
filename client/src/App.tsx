@@ -12,7 +12,7 @@ import ProfilePage from "@/pages/ProfilePage";
 import LandingPage from "@/pages/LandingPage";
 import AuthPage from "@/pages/auth-page";
 import NotFound from "@/pages/not-found";
-import Sidebar from "@/components/layout/Sidebar";
+import Navbar from "@/components/layout/Navbar";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
 
@@ -21,7 +21,7 @@ function Router() {
   const isLandingPage = location === "/landing" || location === "/";
   const isAuthPage = location === "/auth";
 
-  // Render the landing page without sidebar
+  // Render the landing page without navbar
   if (isLandingPage) {
     return (
       <Switch>
@@ -31,7 +31,7 @@ function Router() {
     );
   }
 
-  // Render auth page without sidebar
+  // Render auth page without navbar
   if (isAuthPage) {
     return (
       <Switch>
@@ -40,11 +40,11 @@ function Router() {
     );
   }
 
-  // For all other routes, render with sidebar and protection
+  // For all other routes, render with navbar and protection
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
-      <Sidebar />
-      <main className="flex-1 p-4 md:p-6 overflow-auto bg-gray-100">
+    <div className="min-h-screen flex flex-col bg-gray-100">
+      <Navbar />
+      <main className="flex-1 p-4 md:p-6 overflow-auto">
         <div className="max-w-7xl mx-auto">
           <Switch>
             <Route path="/">

@@ -21,14 +21,14 @@ const Dashboard = () => {
   return (
     <>
       <header className="mb-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold">Welcome, {user?.username || 'User'}</h1>
+        <div className="flex flex-col md:flex-row justify-between md:items-center">
+          <div className="mb-4 md:mb-0">
+            <h1 className="text-2xl font-bold">Welcome, {user?.firstName || user?.username || 'User'}</h1>
             <p className="text-gray-500 mt-1">Here's what's happening with your security.</p>
           </div>
           <div className="flex items-center space-x-3">
             <Link href="/profile">
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" className="mr-2">
                 <User className="h-4 w-4 mr-2" />
                 Profile
               </Button>

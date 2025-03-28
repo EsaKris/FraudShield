@@ -255,7 +255,7 @@ export default function ProfilePage() {
                   )}
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="username">Username</Label>
                     <Input 
@@ -300,9 +300,10 @@ export default function ProfilePage() {
                   </div>
                 </div>
               </CardContent>
-              <CardFooter>
+              <CardFooter className="flex flex-col sm:flex-row justify-end gap-3">
                 <Button 
                   type="submit"
+                  className="w-full sm:w-auto"
                   disabled={updateProfileMutation.isPending || saved}
                 >
                   {updateProfileMutation.isPending ? (
@@ -374,9 +375,10 @@ export default function ProfilePage() {
                   />
                 </div>
               </CardContent>
-              <CardFooter>
+              <CardFooter className="flex flex-col sm:flex-row justify-end gap-3">
                 <Button 
                   type="submit"
+                  className="w-full sm:w-auto"
                   disabled={updatePasswordMutation.isPending || saved}
                 >
                   {updatePasswordMutation.isPending ? (
