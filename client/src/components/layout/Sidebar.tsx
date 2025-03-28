@@ -1,57 +1,51 @@
-import { Link, useLocation } from "wouter";
+import { useLocation } from "wouter";
 
 const Sidebar = () => {
-  const [location] = useLocation();
+  const [location, navigate] = useLocation();
 
   const isActive = (path: string) => {
     return location === path;
   };
 
+  const NavItem = ({ href, icon, text }: { href: string; icon: string; text: string }) => {
+    return (
+      <div 
+        className={`block py-2.5 px-4 rounded cursor-pointer ${isActive(href) ? 'bg-[#0f62fe] text-white' : 'hover:bg-gray-700'} flex items-center`}
+        onClick={() => navigate(href)}
+      >
+        <i className={`fas ${icon} w-5`}></i>
+        <span className="ml-2">{text}</span>
+      </div>
+    );
+  };
+
   return (
     <aside className="w-full md:w-64 bg-[#393939] text-white">
       <div className="p-4 flex flex-col h-full">
-        <div className="mb-8">
+        <div className="mb-8 flex justify-between items-center">
           <h1 className="text-xl font-bold flex items-center">
             <i className="fas fa-shield-alt mr-2"></i>
             SecureCheck
           </h1>
+          <div 
+            className="cursor-pointer rounded-full p-1 hover:bg-gray-700"
+            onClick={() => navigate("/")}
+            title="Go to home page"
+          >
+            <i className="fas fa-home"></i>
+          </div>
         </div>
         
         <nav className="space-y-1 flex-grow">
-          <Link href="/">
-            <a className={`block py-2.5 px-4 rounded ${isActive('/') ? 'bg-[#0f62fe] text-white' : 'hover:bg-gray-700'} flex items-center`}>
-              <i className="fas fa-tachometer-alt w-5"></i>
-              <span className="ml-2">Dashboard</span>
-            </a>
-          </Link>
-          <Link href="/photo-recognition">
-            <a className={`block py-2.5 px-4 rounded ${isActive('/photo-recognition') ? 'bg-[#0f62fe] text-white' : 'hover:bg-gray-700'} flex items-center`}>
-              <i className="fas fa-camera w-5"></i>
-              <span className="ml-2">Identity Verification</span>
-            </a>
-          </Link>
-          <Link href="/fraud-detection">
-            <a className={`block py-2.5 px-4 rounded ${isActive('/fraud-detection') ? 'bg-[#0f62fe] text-white' : 'hover:bg-gray-700'} flex items-center`}>
-              <i className="fas fa-exclamation-triangle w-5"></i>
-              <span className="ml-2">Fraud Detection</span>
-            </a>
-          </Link>
-          <Link href="/phishing-detection">
-            <a className={`block py-2.5 px-4 rounded ${isActive('/phishing-detection') ? 'bg-[#0f62fe] text-white' : 'hover:bg-gray-700'} flex items-center`}>
-              <i className="fas fa-envelope-open-text w-5"></i>
-              <span className="ml-2">Phishing Detection</span>
-            </a>
-          </Link>
-          <Link href="/reports">
-            <a className={`block py-2.5 px-4 rounded ${isActive('/reports') ? 'bg-[#0f62fe] text-white' : 'hover:bg-gray-700'} flex items-center`}>
-              <i className="fas fa-chart-line w-5"></i>
-              <span className="ml-2">Analytics</span>
-            </a>
-          </Link>
-          <a href="#" className="block py-2.5 px-4 rounded hover:bg-gray-700 flex items-center">
+          <NavItem href="/dashboard" icon="fa-tachometer-alt" text="Dashboard" />
+          <NavItem href="/photo-recognition" icon="fa-camera" text="Identity Verification" />
+          <NavItem href="/fraud-detection" icon="fa-exclamation-triangle" text="Fraud Detection" />
+          <NavItem href="/phishing-detection" icon="fa-envelope-open-text" text="Phishing Detection" />
+          <NavItem href="/reports" icon="fa-chart-line" text="Analytics" />
+          <div className="block py-2.5 px-4 rounded hover:bg-gray-700 flex items-center cursor-pointer">
             <i className="fas fa-cog w-5"></i>
             <span className="ml-2">Settings</span>
-          </a>
+          </div>
         </nav>
         
         <div className="mt-auto">
