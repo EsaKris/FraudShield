@@ -4,8 +4,15 @@ import { storage } from "./storage";
 import multer from "multer";
 import { photoService } from "./services/photoService";
 import { fraudService } from "./services/fraudService";
+import { phishingService } from "./services/phishingService";
 import { z } from "zod";
-import { insertPhotoResultSchema, insertFraudAlertSchema, insertActivityLogSchema } from "@shared/schema";
+import { 
+  insertPhotoResultSchema, 
+  insertFraudAlertSchema, 
+  insertActivityLogSchema,
+  insertPhishingEmailSchema,
+  insertPhishingIndicatorSchema
+} from "@shared/schema";
 import path from "path";
 import fs from "fs";
 
@@ -168,6 +175,117 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Fraud check error:', error);
       res.status(500).json({ message: error instanceof Error ? error.message : 'Failed to check for fraud' });
+    }
+  });
+  
+  // Phishing email endpoints
+  app.get('/api/phishing/emails', async (_req: Request, res: Response) => {
+    try {
+      const emails = await storage.getPhishingEmails();
+      res.json(emails);
+    } catch (error) {
+      console.error('Get phishing emails error:', error);
+      res.status(500).json({ message: error instanceof Error ? error.message : 'Failed to retrieve phishing emails' });
+    }
+  });
+  
+  app.get('/api/phishing/emails/:id', async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: 'Invalid email ID' });
+      }
+      
+      const email = await storage.getPhishingEmailById(id);
+      if (!email) {
+        return res.status(404).json({ message: 'Email not found' });
+      }
+      
+      res.json(email);
+    } catch (error) {
+      console.error('Get phishing email error:', error);
+      res.status(500).json({ message: error instanceof Error ? error.message : 'Failed to retrieve phishing email' });
+    }
+  });
+  
+  app.post('/api/phishing/analyze', async (req: Request, res: Response) => {
+    try {
+      const { content, sender, subject, recipient } = req.body;
+      
+      if (!content || !sender || !subject || !recipient) {
+        return res.status(400).json({ message: 'Missing required fields' });
+      }
+      
+      // Analyze the email content
+      const analysisResult = await phishingService.analyzeEmail(content, sender, subject);
+      
+      if (!analysisResult.success) {
+        return res.status(400).json({ message: analysisResult.error || 'Failed to analyze email' });
+      }
+      
+      // Save the email to storage
+      const newEmail = await storage.createPhishingEmail({
+        userId: 1, // Use the default user (in a real app, this would be the authenticated user)
+        subject,
+        sender,
+        recipient,
+        content,
+        receivedAt: new Date().toISOString(),
+        phishingScore: analysisResult.phishingScore,
+        status: analysisResult.phishingScore > 70 ? 'Quarantined' : 'Analyzed'
+      });
+      
+      // Save the indicators
+      for (const indicator of analysisResult.indicators) {
+        await storage.createPhishingIndicator({
+          emailId: newEmail.id,
+          type: indicator.type,
+          description: indicator.description,
+          severity: indicator.severity,
+          confidence: indicator.confidence
+        });
+      }
+      
+      // Log the activity
+      await storage.createActivityLog({
+        userId: 1,
+        activityType: 'Phishing Detection',
+        details: `Email analyzed: ${subject} (Score: ${analysisResult.phishingScore})`,
+        status: analysisResult.phishingScore > 70 ? 'Flagged' : 'Successful'
+      });
+      
+      // Get the complete email with indicators
+      const completeEmail = await storage.getPhishingEmailById(newEmail.id);
+      
+      res.json(completeEmail);
+    } catch (error) {
+      console.error('Phishing analysis error:', error);
+      res.status(500).json({ message: error instanceof Error ? error.message : 'An error occurred during email analysis' });
+    }
+  });
+  
+  app.patch('/api/phishing/emails/:id/status', async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { status } = req.body;
+      
+      if (isNaN(id)) {
+        return res.status(400).json({ message: 'Invalid email ID' });
+      }
+      
+      if (!status || !['Analyzed', 'Pending', 'Quarantined'].includes(status)) {
+        return res.status(400).json({ message: 'Invalid status value' });
+      }
+      
+      const updatedEmail = await storage.updatePhishingEmailStatus(id, status);
+      if (!updatedEmail) {
+        return res.status(404).json({ message: 'Email not found' });
+      }
+      
+      res.json(updatedEmail);
+    } catch (error) {
+      console.error('Update phishing email status error:', error);
+      res.status(500).json({ message: error instanceof Error ? error.message : 'Failed to update email status' });
     }
   });
   

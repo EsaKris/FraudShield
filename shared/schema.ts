@@ -77,3 +77,55 @@ export const insertActivityLogSchema = createInsertSchema(activityLogs).omit({
 
 export type InsertActivityLog = z.infer<typeof insertActivityLogSchema>;
 export type ActivityLog = typeof activityLogs.$inferSelect;
+
+// Phishing Email schema
+export const phishingEmails = pgTable("phishing_emails", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id),
+  subject: text("subject").notNull(),
+  sender: text("sender").notNull(),
+  recipient: text("recipient").notNull(),
+  content: text("content").notNull(),
+  receivedAt: timestamp("received_at").notNull(),
+  analyzedAt: timestamp("analyzed_at"),
+  phishingScore: integer("phishing_score").notNull(),
+  status: text("status").notNull(), // 'Analyzed', 'Pending', 'Quarantined'
+});
+
+export const insertPhishingEmailSchema = createInsertSchema(phishingEmails).omit({
+  id: true,
+  analyzedAt: true,
+});
+
+export type InsertPhishingEmail = z.infer<typeof insertPhishingEmailSchema>;
+export type PhishingEmail = typeof phishingEmails.$inferSelect & {
+  indicators?: PhishingIndicator[];
+};
+
+// Phishing Indicator schema
+export const phishingIndicators = pgTable("phishing_indicators", {
+  id: serial("id").primaryKey(),
+  emailId: integer("email_id").references(() => phishingEmails.id).notNull(),
+  type: text("type").notNull(),
+  description: text("description").notNull(),
+  severity: text("severity").notNull(),
+  confidence: integer("confidence").notNull(),
+});
+
+export const insertPhishingIndicatorSchema = createInsertSchema(phishingIndicators).omit({
+  id: true,
+});
+
+export type InsertPhishingIndicator = z.infer<typeof insertPhishingIndicatorSchema>;
+export type PhishingIndicator = typeof phishingIndicators.$inferSelect;
+
+// Phishing indicator type enum
+export type PhishingIndicatorType = 
+  | 'Suspicious Link' 
+  | 'Spoofed Domain' 
+  | 'Request for Sensitive Information'
+  | 'Suspicious Attachment'
+  | 'Impersonation Attempt'
+  | 'Urgency or Pressure'
+  | 'Grammar Errors'
+  | 'Mismatched URLs';

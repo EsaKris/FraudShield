@@ -36,6 +36,12 @@ const Sidebar = () => {
               <span className="ml-2">Fraud Detection</span>
             </a>
           </Link>
+          <Link href="/phishing-detection">
+            <a className={`block py-2.5 px-4 rounded ${isActive('/phishing-detection') ? 'bg-[#0f62fe] text-white' : 'hover:bg-gray-700'} flex items-center`}>
+              <i className="fas fa-envelope-open-text w-5"></i>
+              <span className="ml-2">Phishing Detection</span>
+            </a>
+          </Link>
           <Link href="/reports">
             <a className={`block py-2.5 px-4 rounded ${isActive('/reports') ? 'bg-[#0f62fe] text-white' : 'hover:bg-gray-700'} flex items-center`}>
               <i className="fas fa-chart-line w-5"></i>

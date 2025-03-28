@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import Dashboard from "@/pages/Dashboard";
 import PhotoRecognition from "@/pages/PhotoRecognition";
 import FraudDetection from "@/pages/FraudDetection";
+import PhishingDetection from "@/pages/PhishingDetection";
 import Reports from "@/pages/Reports";
 import NotFound from "@/pages/not-found";
 import Sidebar from "@/components/layout/Sidebar";
@@ -19,6 +20,7 @@ function Router() {
             <Route path="/" component={Dashboard} />
             <Route path="/photo-recognition" component={PhotoRecognition} />
             <Route path="/fraud-detection" component={FraudDetection} />
+            <Route path="/phishing-detection" component={PhishingDetection} />
             <Route path="/reports" component={Reports} />
             <Route component={NotFound} />
           </Switch>
