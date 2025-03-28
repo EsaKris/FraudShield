@@ -63,6 +63,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         description: `Welcome back, ${user.username}!`,
         variant: "default",
       });
+      // Redirect to dashboard after successful login
+      window.location.href = "/dashboard";
     },
     onError: (error: Error) => {
       toast({
@@ -87,6 +89,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         description: `Welcome to SecureCheck, ${user.username}!`,
         variant: "default",
       });
+      // Redirect to dashboard after successful registration
+      window.location.href = "/dashboard";
     },
     onError: (error: Error) => {
       toast({
@@ -108,6 +112,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         description: "You have been successfully logged out",
         variant: "default",
       });
+      // Redirect to landing page after logout
+      window.location.href = "/";
     },
     onError: (error: Error) => {
       toast({
