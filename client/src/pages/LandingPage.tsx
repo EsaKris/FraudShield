@@ -7,6 +7,31 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-slate-900 text-white">
+      {/* Navbar */}
+      <nav className="bg-gray-900/50 backdrop-blur-sm fixed w-full z-50 border-b border-gray-800">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <i className="fas fa-shield-alt text-xl"></i>
+            <span className="text-xl font-bold">SecureCheck</span>
+          </div>
+
+          <div className="flex items-center space-x-4">
+            <Button 
+              variant="ghost" 
+              className="text-gray-300 hover:text-white hover:bg-gray-800"
+              onClick={() => navigate("/auth")}
+            >
+              Login
+            </Button>
+            <Button 
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              onClick={() => navigate("/auth?tab=register")}
+            >
+              Sign Up
+            </Button>
+          </div>
+        </div>
+      </nav>
       {/* Hero Section */}
       <section className="container mx-auto px-4 pt-20 pb-32">
         <div className="flex flex-col items-center text-center">
@@ -35,7 +60,7 @@ export default function LandingPage() {
               </svg>
             </div>
           </motion.div>
-          
+
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -46,7 +71,7 @@ export default function LandingPage() {
               SecureCheck
             </span>
           </motion.h1>
-          
+
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -56,7 +81,7 @@ export default function LandingPage() {
             Advanced security platform with integrated fraud detection, photo recognition, 
             and phishing detection capabilities to protect your organization.
           </motion.p>
-          
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -93,7 +118,7 @@ export default function LandingPage() {
               Comprehensive Security Features
             </span>
           </h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Feature 1 */}
             <motion.div
@@ -203,7 +228,7 @@ export default function LandingPage() {
               <h3 className="text-4xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600">99.8%</h3>
               <p className="text-gray-400">Fraud Detection Accuracy</p>
             </motion.div>
-            
+
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
@@ -214,7 +239,7 @@ export default function LandingPage() {
               <h3 className="text-4xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-purple-600">5,000+</h3>
               <p className="text-gray-400">Organizations Protected</p>
             </motion.div>
-            
+
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
