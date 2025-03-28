@@ -1,6 +1,7 @@
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
-import { Loader2 } from "lucide-react";
+import { Loader2, User } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Sidebar = () => {
   const [location, navigate] = useLocation();
@@ -58,11 +59,25 @@ const Sidebar = () => {
           <div className="border-t border-gray-700 pt-4 mt-2">
             <div className="flex items-center justify-between p-2">
               <div className="flex items-center">
-                <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center">
-                  <i className="fas fa-user text-sm"></i>
+                <div 
+                  className="cursor-pointer" 
+                  onClick={() => navigate("/profile")} 
+                  title="Edit profile"
+                >
+                  <Avatar className="w-8 h-8">
+                    <AvatarImage src={user?.avatarUrl || undefined} alt={user?.username} />
+                    <AvatarFallback className="text-xs text-white bg-gray-600">
+                      {user?.firstName?.charAt(0) || user?.username?.charAt(0) || <User size={14} />}
+                    </AvatarFallback>
+                  </Avatar>
                 </div>
                 <div className="ml-2">
-                  <div className="text-sm font-medium">{user?.username || "User"}</div>
+                  <div 
+                    className="text-sm font-medium cursor-pointer hover:underline" 
+                    onClick={() => navigate("/profile")}
+                  >
+                    {user?.firstName ? `${user.firstName} ${user.lastName || ''}` : user?.username || "User"}
+                  </div>
                   <div className="text-xs text-gray-400">Signed In</div>
                 </div>
               </div>

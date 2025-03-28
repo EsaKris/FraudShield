@@ -332,6 +332,102 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // User profile endpoints
+  // Update user profile
+  app.patch('/api/user/profile', requireAuth, async (req: Request, res: Response) => {
+    try {
+      const userId = req.user.id;
+      const { email, firstName, lastName } = req.body;
+      
+      const updatedUser = await storage.updateUser(userId, {
+        email,
+        firstName,
+        lastName
+      });
+      
+      res.status(200).json({
+        id: updatedUser.id,
+        username: updatedUser.username,
+        email: updatedUser.email,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+        avatarUrl: updatedUser.avatarUrl
+      });
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+
+  // Upload avatar image
+  app.post('/api/user/avatar', requireAuth, upload.single('avatar'), async (req: Request, res: Response) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      // In a real application, we would upload the image to a storage service
+      // For this example, we'll generate a data URL from the file buffer
+      const buffer = req.file.buffer;
+      const base64Image = buffer.toString('base64');
+      const mimeType = req.file.mimetype;
+      const dataUrl = `data:${mimeType};base64,${base64Image}`;
+      
+      // Update the user's avatarUrl
+      const userId = req.user.id;
+      const updatedUser = await storage.updateUser(userId, {
+        avatarUrl: dataUrl
+      });
+      
+      res.status(200).json({
+        id: updatedUser.id,
+        avatarUrl: updatedUser.avatarUrl
+      });
+    } catch (error) {
+      console.error("Error uploading avatar:", error);
+      res.status(500).json({ message: "Failed to upload avatar" });
+    }
+  });
+
+  // Change password endpoint
+  app.post('/api/user/change-password', requireAuth, async (req: Request, res: Response) => {
+    try {
+      const userId = req.user.id;
+      const { currentPassword, newPassword } = req.body;
+      
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json({ message: "Current password and new password are required" });
+      }
+      
+      // Get the user
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Verify current password
+      const isPasswordValid = await comparePasswords(currentPassword, user.password);
+      if (!isPasswordValid) {
+        return res.status(401).json({ message: "Current password is incorrect" });
+      }
+      
+      // Hash the new password
+      const hashedPassword = await hashPassword(newPassword);
+      
+      // Update the user's password
+      const updatedUser = await storage.updateUser(userId, {
+        password: hashedPassword
+      });
+      
+      res.status(200).json({
+        message: "Password updated successfully"
+      });
+    } catch (error) {
+      console.error("Error changing password:", error);
+      res.status(500).json({ message: "Failed to change password" });
+    }
+  });
+  
   // Phishing email endpoints
   app.get('/api/phishing/emails', async (_req: Request, res: Response) => {
     try {

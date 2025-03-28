@@ -79,7 +79,14 @@ export class MemStorage implements IStorage {
 
   private initializeSampleData() {
     // Initialize with a sample user
-    this.createUser({ username: "admin", password: "admin123" });
+    this.createUser({ 
+      username: "admin", 
+      password: "admin123",
+      firstName: "Admin",
+      lastName: "User",
+      email: "admin@example.com",
+      avatarUrl: "https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff"
+    });
     
     // Add some sample fraud alerts
     this.createFraudAlert({
@@ -257,7 +264,9 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.userIdCounter++;
-    const user: User = { ...insertUser, id };
+    // Set default avatar if not provided
+    const avatarUrl = insertUser.avatarUrl || "https://ui-avatars.com/api/?name=" + encodeURIComponent(insertUser.firstName || insertUser.username);
+    const user: User = { ...insertUser, id, avatarUrl };
     this.users.set(id, user);
     return user;
   }

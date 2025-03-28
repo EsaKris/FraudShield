@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,15 +6,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Check, Save } from "lucide-react";
+import { Loader2, Check, Save, Upload, Camera, User } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function ProfilePage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("personal");
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Profile form state
   const [profileForm, setProfileForm] = useState({
@@ -22,6 +24,7 @@ export default function ProfilePage() {
     email: user?.email || "",
     firstName: user?.firstName || "",
     lastName: user?.lastName || "",
+    avatarUrl: user?.avatarUrl || "",
   });
 
   // Password form state
@@ -109,6 +112,60 @@ export default function ProfilePage() {
     },
   });
 
+  // Avatar upload mutation
+  const uploadAvatarMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append('avatar', file);
+      const res = await apiRequest("POST", "/api/user/avatar", formData);
+      return await res.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Avatar updated",
+        description: "Your profile picture has been updated successfully.",
+      });
+      
+      // Update the form with the new avatar URL
+      setProfileForm(prev => ({
+        ...prev,
+        avatarUrl: data.avatarUrl
+      }));
+      
+      // Invalidate the user query to refresh data
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Upload failed",
+        description: error.message || "There was a problem uploading your avatar.",
+        variant: "destructive",
+      });
+    },
+  });
+  
+  // Handle file selection for avatar
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        toast({
+          title: "File too large",
+          description: "Avatar image must be less than 2MB",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      uploadAvatarMutation.mutate(file);
+    }
+  };
+  
+  // Handle click on avatar to trigger file input
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+  
   // Handle profile update
   const handleProfileUpdate = (e: React.FormEvent) => {
     e.preventDefault();
@@ -166,6 +223,38 @@ export default function ProfilePage() {
             </CardHeader>
             <form onSubmit={handleProfileUpdate}>
               <CardContent className="space-y-4">
+                {/* Avatar section */}
+                <div className="flex flex-col items-center mb-6">
+                  <div 
+                    className="relative cursor-pointer group" 
+                    onClick={handleAvatarClick}
+                  >
+                    <Avatar className="h-24 w-24 border-2 border-gray-200">
+                      <AvatarImage src={profileForm.avatarUrl || undefined} alt={profileForm.username} />
+                      <AvatarFallback className="bg-primary text-primary-foreground text-xl">
+                        {profileForm.firstName?.charAt(0) || profileForm.username?.charAt(0) || <User />}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Camera className="h-8 w-8 text-white" />
+                    </div>
+                  </div>
+                  <input 
+                    type="file" 
+                    ref={fileInputRef}
+                    className="hidden" 
+                    accept="image/*" 
+                    onChange={handleAvatarChange}
+                  />
+                  <p className="text-sm text-gray-500 mt-2">Click to change profile picture</p>
+                  {uploadAvatarMutation.isPending && (
+                    <div className="mt-2 flex items-center">
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      <span className="text-sm">Uploading...</span>
+                    </div>
+                  )}
+                </div>
+                
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="username">Username</Label>
