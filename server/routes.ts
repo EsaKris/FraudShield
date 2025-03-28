@@ -6,6 +6,7 @@ import { photoService } from "./services/photoService";
 import { fraudService } from "./services/fraudService";
 import { phishingService } from "./services/phishingService";
 import { setupAuth } from "./auth";
+import { comparePasswords, hashPassword } from "./auth"; // Import password utilities
 import { z } from "zod";
 import { 
   insertPhotoResultSchema, 

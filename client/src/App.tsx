@@ -8,6 +8,7 @@ import FraudDetection from "@/pages/FraudDetection";
 import PhishingDetection from "@/pages/PhishingDetection";
 import Reports from "@/pages/Reports";
 import SettingsPage from "@/pages/SettingsPage";
+import ProfilePage from "@/pages/ProfilePage";
 import LandingPage from "@/pages/LandingPage";
 import AuthPage from "@/pages/auth-page";
 import NotFound from "@/pages/not-found";
@@ -55,6 +56,7 @@ function Router() {
             <ProtectedRoute path="/phishing-detection" component={PhishingDetection} />
             <ProtectedRoute path="/reports" component={Reports} />
             <ProtectedRoute path="/settings" component={SettingsPage} />
+            <ProtectedRoute path="/profile" component={ProfilePage} />
             <Route component={NotFound} />
           </Switch>
         </div>
