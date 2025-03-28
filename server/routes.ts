@@ -68,23 +68,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Photo recognition endpoint
   app.post('/api/photo-recognition', upload.single('photo'), async (req: Request, res: Response) => {
     try {
+      console.log("Received photo upload request", { 
+        contentType: req.headers['content-type'],
+        hasFile: !!req.file,
+        fileSize: req.file?.size,
+        mimetype: req.file?.mimetype,
+        fieldname: req.file?.fieldname,
+        purpose: req.body?.purpose
+      });
+      
       if (!req.file) {
-        return res.status(400).json({ message: 'No photo provided' });
+        console.error("No file uploaded or file field name doesn't match 'photo'");
+        return res.status(400).json({ 
+          message: 'No photo provided',
+          details: 'Make sure you are uploading a file with the field name "photo"'
+        });
       }
       
       // Process the image
       const photoBuffer = req.file.buffer;
       const purpose = req.body.purpose || 'Identity Verification';
       
+      console.log(`Processing photo for purpose: ${purpose}, buffer size: ${photoBuffer.length} bytes, mime type: ${req.file.mimetype}`);
+      
       // Call photo service to process the image
       const processResult = await photoService.processImage(photoBuffer);
       
       if (!processResult.success || !processResult.result) {
-        return res.status(400).json({ message: processResult.error || 'Failed to process image' });
+        console.error("Photo processing failed", processResult.error);
+        return res.status(400).json({ 
+          message: processResult.error || 'Failed to process image',
+          details: 'The image could not be processed. Try a different image or check if it contains a clear face.'
+        });
       }
+      
+      console.log("Photo processed successfully, assessing fraud risk");
       
       // Assess fraud risk
       const resultWithRisk = photoService.assessFraudRisk(processResult.result);
+      
+      console.log("Saving results to storage", {
+        name: resultWithRisk.name,
+        confidence: resultWithRisk.confidence,
+        fraudRisk: resultWithRisk.fraudRisk
+      });
       
       // Save the result to storage
       const savedResult = await storage.createPhotoResult({
@@ -100,18 +127,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
         fraudRisk: resultWithRisk.fraudRisk
       });
       
+      console.log("Creating activity log");
+      
       // Log the activity
       await storage.createActivityLog({
         userId: 1,
         activityType: 'Photo Recognition',
-        details: `Identity verification for ${savedResult.name}`,
+        details: `Identity verification for ${savedResult.name || 'Unknown Person'}`,
         status: 'Successful'
       });
       
-      res.json(savedResult);
+      console.log("Photo recognition complete, returning results");
+      
+      // Return both the saved DB record and the processed result
+      // This ensures we have the correct data types and format from both sources
+      res.json({
+        ...savedResult,
+        ...resultWithRisk
+      });
     } catch (error) {
       console.error('Photo recognition error:', error);
-      res.status(500).json({ message: error instanceof Error ? error.message : 'An error occurred during photo processing' });
+      res.status(500).json({ 
+        message: 'Internal server error',
+        details: error instanceof Error ? error.message : 'Unknown error occurred'
+      });
     }
   });
   
