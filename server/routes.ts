@@ -1,10 +1,11 @@
-import type { Express, Request, Response } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import multer from "multer";
 import { photoService } from "./services/photoService";
 import { fraudService } from "./services/fraudService";
 import { phishingService } from "./services/phishingService";
+import { setupAuth } from "./auth";
 import { z } from "zod";
 import { 
   insertPhotoResultSchema, 
@@ -39,10 +40,123 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Setup authentication
+  setupAuth(app);
+
+  // Authentication middleware
+  const requireAuth = (req: Request, res: Response, next: NextFunction) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+    next();
+  };
+  
   // API routes
   
   // Dashboard stats endpoint
-  app.get('/api/stats', async (_req: Request, res: Response) => {
+  // Model settings endpoint for face-api.js - GET status
+  app.get('/api/face-api-models', requireAuth, async (_req: Request, res: Response) => {
+    // Check if face-api.js models exist on the server
+    const modelsDir = path.join(process.cwd(), 'models');
+    
+    try {
+      // Check if models directory exists
+      if (!fs.existsSync(modelsDir)) {
+        fs.mkdirSync(modelsDir, { recursive: true });
+        return res.status(404).json({
+          message: 'Models not found',
+          status: 'not_downloaded'
+        });
+      }
+      
+      // Check if essential model files exist
+      const essentialModels = [
+        'face_recognition_model-weights_manifest.json',
+        'face_landmark_68_model-weights_manifest.json',
+        'age_gender_model-weights_manifest.json',
+        'ssd_mobilenetv1_model-weights_manifest.json'
+      ];
+      
+      const missingModels = essentialModels.filter(
+        model => !fs.existsSync(path.join(modelsDir, model))
+      );
+      
+      if (missingModels.length > 0) {
+        return res.status(206).json({
+          message: 'Some models missing',
+          status: 'incomplete',
+          missing: missingModels
+        });
+      }
+      
+      // All models exist
+      return res.status(200).json({
+        message: 'All models available',
+        status: 'complete'
+      });
+    } catch (error) {
+      console.error('Error checking model files:', error);
+      return res.status(500).json({
+        message: 'Error checking models',
+        status: 'error'
+      });
+    }
+  });
+  
+  // Update model settings - POST endpoint
+  app.post('/api/face-api-models/settings', requireAuth, async (req: Request, res: Response) => {
+    try {
+      const { useHighAccuracyModel, preloadModels } = req.body;
+      
+      if (typeof useHighAccuracyModel !== 'boolean' || typeof preloadModels !== 'boolean') {
+        return res.status(400).json({
+          message: 'Invalid settings format',
+          details: 'Both useHighAccuracyModel and preloadModels must be boolean values'
+        });
+      }
+      
+      // Update photo service settings
+      photoService.updateModelSettings({
+        useHighAccuracyModel,
+        preloadModels
+      });
+      
+      return res.status(200).json({
+        message: 'Model settings updated successfully',
+        settings: {
+          useHighAccuracyModel,
+          preloadModels
+        }
+      });
+    } catch (error) {
+      console.error('Error updating model settings:', error);
+      return res.status(500).json({
+        message: 'Failed to update model settings',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+  
+  // Download face-api.js models - POST endpoint
+  app.post('/api/face-api-models/download', requireAuth, async (_req: Request, res: Response) => {
+    try {
+      // Force model loading in the photoService
+      await photoService.loadModels();
+      
+      return res.status(200).json({
+        message: 'Models downloaded successfully',
+        status: 'complete'
+      });
+    } catch (error) {
+      console.error('Error downloading models:', error);
+      return res.status(500).json({
+        message: 'Failed to download models',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+  
+  app.get('/api/stats', requireAuth, async (_req: Request, res: Response) => {
     // In a real implementation, this would fetch actual stats
     const stats = {
       identitiesVerified: 1254,
@@ -55,18 +169,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Activity logs endpoints
-  app.get('/api/activities', async (_req: Request, res: Response) => {
+  app.get('/api/activities', requireAuth, async (_req: Request, res: Response) => {
     const activities = await storage.getActivityLogs();
     res.json(activities);
   });
   
-  app.get('/api/activities/photo', async (_req: Request, res: Response) => {
+  app.get('/api/activities/photo', requireAuth, async (_req: Request, res: Response) => {
     const activities = await storage.getActivityLogsByType('Photo Recognition');
     res.json(activities);
   });
   
   // Photo recognition endpoint
-  app.post('/api/photo-recognition', upload.single('photo'), async (req: Request, res: Response) => {
+  app.post('/api/photo-recognition', requireAuth, upload.single('photo'), async (req: Request, res: Response) => {
     try {
       console.log("Received photo upload request", { 
         contentType: req.headers['content-type'],

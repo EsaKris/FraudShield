@@ -1,7 +1,10 @@
 import { useLocation } from "wouter";
+import { useAuth } from "@/hooks/use-auth";
+import { Loader2 } from "lucide-react";
 
 const Sidebar = () => {
   const [location, navigate] = useLocation();
+  const { user, logoutMutation } = useAuth();
 
   const isActive = (path: string) => {
     return location === path;
@@ -29,8 +32,8 @@ const Sidebar = () => {
           </h1>
           <div 
             className="cursor-pointer rounded-full p-1 hover:bg-gray-700"
-            onClick={() => navigate("/")}
-            title="Go to home page"
+            onClick={() => navigate("/landing")}
+            title="Go to landing page"
           >
             <i className="fas fa-home"></i>
           </div>
@@ -42,10 +45,7 @@ const Sidebar = () => {
           <NavItem href="/fraud-detection" icon="fa-exclamation-triangle" text="Fraud Detection" />
           <NavItem href="/phishing-detection" icon="fa-envelope-open-text" text="Phishing Detection" />
           <NavItem href="/reports" icon="fa-chart-line" text="Analytics" />
-          <div className="block py-2.5 px-4 rounded hover:bg-gray-700 flex items-center cursor-pointer">
-            <i className="fas fa-cog w-5"></i>
-            <span className="ml-2">Settings</span>
-          </div>
+          <NavItem href="/settings" icon="fa-cog" text="Settings" />
         </nav>
         
         <div className="mt-auto">
@@ -56,13 +56,26 @@ const Sidebar = () => {
             </div>
           </div>
           <div className="border-t border-gray-700 pt-4 mt-2">
-            <div className="flex items-center p-2">
-              <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center">
-                <i className="fas fa-user text-sm"></i>
+            <div className="flex items-center justify-between p-2">
+              <div className="flex items-center">
+                <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center">
+                  <i className="fas fa-user text-sm"></i>
+                </div>
+                <div className="ml-2">
+                  <div className="text-sm font-medium">{user?.username || "User"}</div>
+                  <div className="text-xs text-gray-400">Signed In</div>
+                </div>
               </div>
-              <div className="ml-2">
-                <div className="text-sm font-medium">Admin User</div>
-                <div className="text-xs text-gray-400">Administrator</div>
+              <div 
+                className="cursor-pointer bg-gray-700 hover:bg-gray-600 rounded p-1.5 flex items-center"
+                onClick={() => logoutMutation.mutate()}
+                title="Sign out"
+              >
+                {logoutMutation.isPending ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : (
+                  <i className="fas fa-sign-out-alt text-sm"></i>
+                )}
               </div>
             </div>
           </div>

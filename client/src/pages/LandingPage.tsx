@@ -66,15 +66,18 @@ export default function LandingPage() {
             <Button 
               size="lg" 
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8"
-              onClick={() => navigate("/dashboard")}
+              onClick={() => navigate("/auth")}
             >
-              Enter Dashboard
+              Get Started
             </Button>
             <Button 
               size="lg" 
               variant="outline" 
               className="border-gray-500 text-gray-300 hover:bg-gray-800"
-              onClick={() => navigate("/fraud-detection")}
+              onClick={() => {
+                // Scroll to features section instead of navigating to authenticated page
+                document.getElementById('features-section')?.scrollIntoView({ behavior: 'smooth' });
+              }}
             >
               Learn More
             </Button>
@@ -83,7 +86,7 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section className="bg-gray-900 py-20">
+      <section id="features-section" className="bg-gray-900 py-20">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
@@ -236,7 +239,7 @@ export default function LandingPage() {
           <Button 
             size="lg" 
             className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-10"
-            onClick={() => navigate("/dashboard")}
+            onClick={() => navigate("/auth")}
           >
             Get Started Today
           </Button>
