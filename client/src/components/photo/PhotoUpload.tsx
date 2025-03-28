@@ -20,7 +20,18 @@ const PhotoUpload = ({ onResultReceived, setLoadingState }: PhotoUploadProps) =>
 
   const uploadMutation = useMutation({
     mutationFn: async (formData: FormData) => {
-      const response = await apiRequest("POST", "/api/photo-recognition", formData);
+      // Don't set Content-Type header, let the browser set it with the proper boundary for multipart/form-data
+      const response = await fetch('/api/photo-recognition', {
+        method: 'POST',
+        body: formData, 
+        // Important: Do NOT set Content-Type here, let the browser handle it
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to process photo');
+      }
+      
       const data = await response.json();
       return data as PhotoRecognitionResult;
     },
