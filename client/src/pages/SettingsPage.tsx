@@ -200,13 +200,13 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto py-8 px-4 bg-gradient-to-b from-slate-950 to-slate-900 text-white min-h-screen">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Settings</h1>
+        <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">Settings</h1>
         <Button 
           onClick={saveSettings} 
           disabled={saving || saved}
-          className="bg-blue-600 hover:bg-blue-700"
+          className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
         >
           {saving ? (
             <>
@@ -230,10 +230,10 @@ export default function SettingsPage() {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
         {/* Left Column - User and Account */}
         <div className="md:col-span-4">
-          <Card>
+          <Card className="bg-gray-800 border-gray-700 shadow-xl">
             <CardHeader>
-              <CardTitle>User Information</CardTitle>
-              <CardDescription>Manage your account details</CardDescription>
+              <CardTitle className="text-white">User Information</CardTitle>
+              <CardDescription className="text-gray-400">Manage your account details</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
@@ -248,17 +248,17 @@ export default function SettingsPage() {
             </CardContent>
           </Card>
           
-          <Card className="mt-6">
+          <Card className="mt-6 bg-gray-800 border-gray-700 shadow-xl">
             <CardHeader>
-              <CardTitle>AI Model Settings</CardTitle>
-              <CardDescription>Configure face-api.js model preferences</CardDescription>
+              <CardTitle className="text-white">AI Model Settings</CardTitle>
+              <CardDescription className="text-gray-400">Configure face-api.js model preferences</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="font-medium">High Accuracy Model</h4>
-                    <p className="text-sm text-gray-500">Uses more precise but slower models for detection</p>
+                    <h4 className="font-medium text-white">High Accuracy Model</h4>
+                    <p className="text-sm text-gray-400">Uses more precise but slower models for detection</p>
                   </div>
                   <Switch 
                     checked={modelSettings.useHighAccuracyModel} 
@@ -273,8 +273,8 @@ export default function SettingsPage() {
                 
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="font-medium">Preload Models</h4>
-                    <p className="text-sm text-gray-500">Download models on startup for faster analysis</p>
+                    <h4 className="font-medium text-white">Preload Models</h4>
+                    <p className="text-sm text-gray-400">Download models on startup for faster analysis</p>
                   </div>
                   <Switch 
                     checked={modelSettings.preloadModels} 
@@ -287,23 +287,23 @@ export default function SettingsPage() {
                 
                 <div className="mt-2">
                   {/* Model Status Indicator */}
-                  <div className="mb-3 p-2 rounded-md flex items-center justify-between bg-gray-50 dark:bg-gray-800">
+                  <div className="mb-3 p-2 rounded-md flex items-center justify-between bg-gray-900 border border-gray-700">
                     <div className="flex items-center">
                       {modelStatus.isDownloaded ? (
-                        <Cloud className="h-4 w-4 text-green-500 mr-2" />
+                        <Cloud className="h-4 w-4 text-blue-500 mr-2" />
                       ) : (
-                        <CloudOff className="h-4 w-4 text-amber-500 mr-2" />
+                        <CloudOff className="h-4 w-4 text-purple-500 mr-2" />
                       )}
-                      <span className="text-sm font-medium">
+                      <span className="text-sm font-medium text-white">
                         Models: {modelStatus.isDownloaded ? 'Downloaded' : 'Not Downloaded'}
                       </span>
                     </div>
                     <span className={`text-xs px-2 py-1 rounded ${
                       modelStatus.status === 'complete' 
-                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
+                        ? 'bg-blue-900/50 text-blue-300' 
                         : modelStatus.status === 'downloading' 
-                          ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-                          : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+                          ? 'bg-purple-900/50 text-purple-300'
+                          : 'bg-gray-700 text-gray-300'
                     }`}>
                       {modelStatus.status === 'complete' 
                         ? 'Ready' 
@@ -352,17 +352,17 @@ export default function SettingsPage() {
 
         {/* Right Column - Modules and Preferences */}
         <div className="md:col-span-8">
-          <Card>
+          <Card className="bg-gray-800 border-gray-700 shadow-xl">
             <CardHeader>
-              <CardTitle>Security Module Settings</CardTitle>
-              <CardDescription>Enable or disable specific security features</CardDescription>
+              <CardTitle className="text-white">Security Module Settings</CardTitle>
+              <CardDescription className="text-gray-400">Enable or disable specific security features</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="font-medium">Photo Recognition</h4>
-                    <p className="text-sm text-gray-500">Identity verification through images</p>
+                    <h4 className="font-medium text-white">Photo Recognition</h4>
+                    <p className="text-sm text-gray-400">Identity verification through images</p>
                   </div>
                   <Switch 
                     checked={settings.enablePhotoRecognition} 
@@ -374,8 +374,8 @@ export default function SettingsPage() {
                 
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="font-medium">Fraud Detection</h4>
-                    <p className="text-sm text-gray-500">Detect suspicious activities and transactions</p>
+                    <h4 className="font-medium text-white">Fraud Detection</h4>
+                    <p className="text-sm text-gray-400">Detect suspicious activities and transactions</p>
                   </div>
                   <Switch 
                     checked={settings.enableFraudDetection} 
@@ -387,8 +387,8 @@ export default function SettingsPage() {
                 
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="font-medium">Phishing Detection</h4>
-                    <p className="text-sm text-gray-500">Analyze emails for phishing attempts</p>
+                    <h4 className="font-medium text-white">Phishing Detection</h4>
+                    <p className="text-sm text-gray-400">Analyze emails for phishing attempts</p>
                   </div>
                   <Switch 
                     checked={settings.enablePhishingDetection} 
@@ -399,17 +399,17 @@ export default function SettingsPage() {
             </CardContent>
           </Card>
           
-          <Card className="mt-6">
+          <Card className="mt-6 bg-gray-800 border-gray-700 shadow-xl">
             <CardHeader>
-              <CardTitle>Application Preferences</CardTitle>
-              <CardDescription>Customize your SecureCheck experience</CardDescription>
+              <CardTitle className="text-white">Application Preferences</CardTitle>
+              <CardDescription className="text-gray-400">Customize your SecureCheck experience</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="font-medium">Notifications</h4>
-                    <p className="text-sm text-gray-500">Enable alerts for security events</p>
+                    <h4 className="font-medium text-white">Notifications</h4>
+                    <p className="text-sm text-gray-400">Enable alerts for security events</p>
                   </div>
                   <Switch 
                     checked={settings.notificationsEnabled} 
@@ -421,8 +421,8 @@ export default function SettingsPage() {
                 
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="font-medium">Dark Mode</h4>
-                    <p className="text-sm text-gray-500">Switch between light and dark themes</p>
+                    <h4 className="font-medium text-white">Dark Mode</h4>
+                    <p className="text-sm text-gray-400">Switch between light and dark themes</p>
                   </div>
                   <Switch 
                     checked={settings.darkMode} 
@@ -434,8 +434,8 @@ export default function SettingsPage() {
                 
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="font-medium">Auto Logout</h4>
-                    <p className="text-sm text-gray-500">Automatically sign out after inactivity</p>
+                    <h4 className="font-medium text-white">Auto Logout</h4>
+                    <p className="text-sm text-gray-400">Automatically sign out after inactivity</p>
                   </div>
                   <Switch 
                     checked={settings.autoLogout} 
@@ -446,15 +446,15 @@ export default function SettingsPage() {
                 {settings.autoLogout && (
                   <div className="pl-7 mt-2">
                     <div className="flex items-center gap-3">
-                      <Label htmlFor="logout-time" className="flex-shrink-0">Logout after</Label>
+                      <Label htmlFor="logout-time" className="flex-shrink-0 text-white">Logout after</Label>
                       <Input 
                         id="logout-time" 
                         type="number" 
-                        className="w-20" 
+                        className="w-20 bg-gray-700 border-gray-600 text-white" 
                         value={settings.autoLogoutTime}
                         onChange={(e) => setSettings({...settings, autoLogoutTime: e.target.value})}
                       />
-                      <span className="text-gray-500">minutes of inactivity</span>
+                      <span className="text-gray-400">minutes of inactivity</span>
                     </div>
                   </div>
                 )}
