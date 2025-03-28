@@ -5,6 +5,7 @@ import { useState } from "react";
 
 export default function LandingPage() {
   const [, navigate] = useLocation();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-slate-900 text-white">
@@ -19,7 +20,11 @@ export default function LandingPage() {
 
             {/* Desktop Menu */}
             <div className="hidden md:flex items-center space-x-4">
-              <Button onClick={() => navigate("/auth")} variant="outline">
+              <Button 
+                variant="ghost" 
+                className="text-gray-300 hover:text-white hover:bg-gray-800"
+                onClick={() => navigate("/auth")}
+              >
                 Get Started
               </Button>
             </div>
@@ -40,108 +45,40 @@ export default function LandingPage() {
           {mobileMenuOpen && (
             <div className="md:hidden pt-4 pb-3 border-t border-gray-700 mt-3">
               <Button 
-                onClick={() => navigate("/auth")} 
-                variant="outline" 
-                className="w-full"
+                variant="ghost"
+                className="w-full text-gray-300 hover:text-white hover:bg-gray-800"
+                onClick={() => navigate("/auth")}
               >
                 Get Started
               </Button>
             </div>
           )}
-        </div> 
-              variant="ghost" 
-              className="text-gray-300 hover:text-white hover:bg-gray-800"
-              onClick={() => navigate("/auth")}
-            >
-              Login
-            </Button>
-            <Button 
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-              onClick={() => navigate("/auth?tab=register")}
-            >
-              Sign Up
-            </Button>
-          </div>
         </div>
       </nav>
+
       {/* Hero Section */}
-      <section className="container mx-auto px-4 pt-20 pb-32">
-        <div className="flex flex-col items-center text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="mb-6"
+      <section className="pt-32 pb-20 px-4">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="container mx-auto text-center"
+        >
+          <h1 className="text-4xl md:text-6xl font-bold mb-6">
+            Secure Your Digital Identity
+          </h1>
+          <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
+            Advanced AI-powered security suite for fraud prevention, identity verification, and phishing detection.
+          </p>
+          <Button 
+            size="lg"
+            onClick={() => navigate("/auth")}
+            className="bg-blue-600 hover:bg-blue-700"
           >
-            <div className="inline-block p-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="40"
-                height="40"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-white"
-              >
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                <path d="M12 8v4" />
-                <path d="M12 16h.01" />
-              </svg>
-            </div>
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6"
-          >
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
-              SecureCheck
-            </span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-xl md:text-2xl text-gray-300 mb-10 max-w-3xl"
-          >
-            Advanced security platform with integrated fraud detection, photo recognition, 
-            and phishing detection capabilities to protect your organization.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex flex-col sm:flex-row gap-4"
-          >
-            <Button 
-              size="lg" 
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8"
-              onClick={() => navigate("/auth")}
-            >
-              Get Started
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline" 
-              className="border-gray-500 text-gray-300 hover:bg-gray-800"
-              onClick={() => {
-                // Scroll to features section instead of navigating to authenticated page
-                document.getElementById('features-section')?.scrollIntoView({ behavior: 'smooth' });
-              }}
-            >
-              Learn More
-            </Button>
-          </motion.div>
-        </div>
+            Get Started
+          </Button>
+        </motion.div>
       </section>
-
       {/* Features Section */}
       <section id="features-section" className="bg-gray-900 py-20">
         <div className="container mx-auto px-4">
