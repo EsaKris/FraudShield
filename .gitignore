@@ -9,3 +9,26 @@ vite.config.ts.*
 venv
 __pycache__
 *.py[cod]
+db.sqlite3
+*.log
+*.env
+*.env.*
+*.egg-info
+*.egg
+*.db
+*.sqlite3                   
+
+# Ignore Replit configuration if not needed
+.replit
+
+# Ignore Python cache and virtual environment
+__pycache__/
+*.py[cod]
+venv/
+
+# Ignore system-specific files
+.DS_Store
+
+# Ignore logs and temporary files
+*.log
+*.tmp
