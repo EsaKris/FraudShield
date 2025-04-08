@@ -26,8 +26,10 @@ from securecheck.settings import BASE_DIR
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
-    path('', serve, {'path': 'index.html', 'document_root': os.path.join(settings.BASE_DIR, 'dist/public')}),
+    # Serve index.html for all non-admin, non-api routes
+    re_path(r'^(?!admin/|api/|static/).*$', TemplateView.as_view(template_name='index.html')),
 ]
 
 if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=os.path.join(settings.BASE_DIR, 'dist/public'))
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

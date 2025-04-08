@@ -2174,7 +2174,7 @@ import { fileURLToPath as fileURLToPath2 } from "url";
 var __filename2 = fileURLToPath2(import.meta.url);
 var __dirname2 = dirname2(__filename2);
 var vite_config_default = defineConfig({
-  base: "./",
+  base: "/static/",
   server: {
     proxy: {
       "/api": "http://127.0.0.1:8000"
@@ -2200,8 +2200,14 @@ var vite_config_default = defineConfig({
   },
   root: path3.resolve(__dirname2, "client"),
   build: {
-    outDir: path3.resolve(__dirname2, "dist/public"),
-    emptyOutDir: true
+    outDir: "../dist/public",
+    emptyOutDir: true,
+    manifest: true,
+    rollupOptions: {
+      input: {
+        main: path3.resolve(__dirname2, "client/src/main.tsx")
+      }
+    }
   }
 });
 

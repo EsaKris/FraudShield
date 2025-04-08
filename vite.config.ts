@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export default defineConfig({
-  base: './',
+  base: '/static/',
   server: {
     proxy: {
       '/api': 'http://127.0.0.1:8000', // Proxy API requests to Django
@@ -37,7 +37,13 @@ export default defineConfig({
   },
   root: path.resolve(__dirname, "client"),
   build: {
-    outDir: path.resolve(__dirname, "dist/public"),
+    outDir: '../dist/public',  
     emptyOutDir: true,
+    manifest: true,
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, "client/src/main.tsx")
+      }
+    }
   },
 });
