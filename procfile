@@ -1,0 +1,2 @@
+django: python manage.py runserver
+react: cd client && npm start
