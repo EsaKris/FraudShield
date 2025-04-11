@@ -173,5 +173,3 @@ FACE_RECOGNITION_MODELS_PATH = os.path.join(BASE_DIR, 'models')
 os.makedirs(FACE_RECOGNITION_MODELS_PATH, exist_ok=True)
 
 
-# In your settings.py
-APPEND_SLASH = False
